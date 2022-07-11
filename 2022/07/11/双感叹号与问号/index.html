@@ -1,0 +1,200 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>双感叹号与问号 - Remote&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="前言空指针（NPE）是许多编程语言都会有的一个大坑，也因为空指针，历史上出现了名为 十万美元的错误的重大事件，所以作为一名程序员，不得不好好重视NPE的问题。
+好消息是，Kotlin的类型系统很大程,"> 
+    <meta name="author" content="Remote"> 
+    <link rel="alternative" href="atom.xml" title="Remote&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+    
+    
+    <meta name="twitter:card" content="summary"/>
+    <meta name="twitter:title" content="双感叹号与问号 - Remote&#39;s Blog"/>
+    <meta name="twitter:description" content="前言空指针（NPE）是许多编程语言都会有的一个大坑，也因为空指针，历史上出现了名为 十万美元的错误的重大事件，所以作为一名程序员，不得不好好重视NPE的问题。
+好消息是，Kotlin的类型系统很大程,"/>
+    
+    
+    
+    
+    <meta property="og:site_name" content="Remote&#39;s Blog"/>
+    <meta property="og:type" content="object"/>
+    <meta property="og:title" content="双感叹号与问号 - Remote&#39;s Blog"/>
+    <meta property="og:description" content="前言空指针（NPE）是许多编程语言都会有的一个大坑，也因为空指针，历史上出现了名为 十万美元的错误的重大事件，所以作为一名程序员，不得不好好重视NPE的问题。
+好消息是，Kotlin的类型系统很大程,"/>
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+    <script>window.searchDbPath = "/search.xml";</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet">
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">Remote&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://remote23.github.io"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">双感叹号与问号</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">双感叹号与问号</h1>
+        <div class="stuff">
+            <span>七月 11, 2022</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>空指针（NPE）是许多编程语言都会有的一个大坑，也因为空指针，历史上出现了名为 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Tony_Hoare#Apologies_and_retractions">十万美元的错误</a>的重大事件，所以作为一名程序员，不得不好好重视NPE的问题。</p>
+<p>好消息是，Kotlin的类型系统很大程度上消除了NPE的可能，从代码层面上阻止NPE的发生。</p>
+<hr>
+<h2 id="空安全"><a href="#空安全" class="headerlink" title="空安全"></a>空安全</h2><h3 id="问号“-”"><a href="#问号“-”" class="headerlink" title="问号“?”"></a>问号“?”</h3><p>一般来说，要是对一个变量进行了常规的初始化，那它就不会是一个空值，如</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> mA: String = <span class="string">&quot;haha&quot;</span></span><br><span class="line">print(mA)</span><br></pre></td></tr></table></figure>
+
+<p>在Kotlin里，没有特殊声明的情况下，<strong>所有的值都应该是非空的</strong>，如果你强制给其赋一个空值，如<code>mA = null</code>，则会在编译时报错。这就是Kotlin强大的空指针检查特性之一。</p>
+<p>而如果我就是要给它赋一个空值呢？这个时候就要使用“?”来修饰变量：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> mB: String? = <span class="string">&quot;Oops&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>在这种情况下，<code>mB = null</code>是可能的，编译器不会阻止编译，这也提升了NPE的可能性。</p>
+<p>所以如果一个变量被“?”给修饰了，那我们要做的就是：在每次使用它前都进行一次空值检查：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> mB: String? = <span class="string">&quot;Oops&quot;</span></span><br><span class="line"><span class="keyword">if</span> (mB == <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="comment">// Do Something</span></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// DO SOMETHING!</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但是如果每次都对其进行检查，未免太过繁琐，而且也不能够保证这个变量在之后的代码里会不会被赋空值。</p>
+<p>所以另一种做法是，使用安全的调用，即“?.”：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">print(mB?.length)</span><br></pre></td></tr></table></figure>
+
+<p>这种情况下，如果为空，则会返回一个null，不为空则返回它原有的值。</p>
+<h3 id="双感叹号“-”"><a href="#双感叹号“-”" class="headerlink" title="双感叹号“!!”"></a>双感叹号“!!”</h3><p>非空断言运算符（!!）将任何值转换为非空类型，若该值为空则抛出异常。</p>
+<p>使用它就相当于放弃了Kotlin提供的完善的空安全保护，在值为空时将会狠狠地抛出NPE，在绝大部分情况下都不推荐使用（之前在项目里根据IDE的智能补全使用了以后，被导师给提醒了）。</p>
+<p>使用方法：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> mC: String? = <span class="literal">null</span></span><br><span class="line">print(mC!!.length)</span><br></pre></td></tr></table></figure>
+
+<p>说实话在真正了解了以后，我也不知道这个东西意义何在，为什么要这么做？？？</p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>Kotlin的空安全不仅仅是这些，当然我还要继续摸索，踩几个坑以后就会加深印象了吧XD。</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+        
+    <div id="gitalk-container" class="comment link"
+		data-enable="false"
+        data-ae="false"
+        data-ci=""
+        data-cs=""
+        data-r=""
+        data-o=""
+        data-a=""
+        data-d="false"
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+</html>
