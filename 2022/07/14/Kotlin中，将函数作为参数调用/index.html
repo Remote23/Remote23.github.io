@@ -1,0 +1,202 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kotlin中，将函数作为参数调用 - Remote&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="前言最近在学习Kotlin的过程中，觉得光学没用，得用Kotlin写点实用的东西出来，正好最近在折腾VR的全身追踪方案，因为全球芯片缺货，高精度的九轴传感器的价格高了将近5倍，这个时候入手显然是不明,"> 
+    <meta name="author" content="Remote"> 
+    <link rel="alternative" href="atom.xml" title="Remote&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+    
+    
+    <meta name="twitter:card" content="summary"/>
+    <meta name="twitter:title" content="Kotlin中，将函数作为参数调用 - Remote&#39;s Blog"/>
+    <meta name="twitter:description" content="前言最近在学习Kotlin的过程中，觉得光学没用，得用Kotlin写点实用的东西出来，正好最近在折腾VR的全身追踪方案，因为全球芯片缺货，高精度的九轴传感器的价格高了将近5倍，这个时候入手显然是不明,"/>
+    
+    
+    
+    
+    <meta property="og:site_name" content="Remote&#39;s Blog"/>
+    <meta property="og:type" content="object"/>
+    <meta property="og:title" content="Kotlin中，将函数作为参数调用 - Remote&#39;s Blog"/>
+    <meta property="og:description" content="前言最近在学习Kotlin的过程中，觉得光学没用，得用Kotlin写点实用的东西出来，正好最近在折腾VR的全身追踪方案，因为全球芯片缺货，高精度的九轴传感器的价格高了将近5倍，这个时候入手显然是不明,"/>
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+    <script>window.searchDbPath = "/search.xml";</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet">
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">Remote&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://Remote23.github.io"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">Kotlin中，将函数作为参数调用</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">Kotlin中，将函数作为参数调用</h1>
+        <div class="stuff">
+            <span>七月 14, 2022</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/kotlin/" rel="tag">kotlin</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在学习Kotlin的过程中，觉得光学没用，得用Kotlin写点实用的东西出来，正好最近在折腾VR的全身追踪方案，因为全球芯片缺货，高精度的九轴传感器的价格高了将近5倍，这个时候入手显然是不明智的，于是便将目光放到了自己闲置的几部手机上。</p>
+<p>现代的手机基本都是九轴的传感器配置，要是能够写个应用程序来读取传感器的数值，并且通过算法来做相对空间定位的话，感觉追踪精度不会太差，但是问题也随之而来。我会把自己在这个项目里遇到的问题分别写几篇文章来记录，不过在这篇文章里，我们先来谈谈函数作为参数传递的问题。</p>
+<h2 id="第一个坑"><a href="#第一个坑" class="headerlink" title="第一个坑"></a>第一个坑</h2><p>在我的这个项目里，我使用了一个接口来确定是否启用手机的磁力计，<br>在Java里，想要实现一个函数式接口，只需要这么做：</p>
+<ul>
+<li><p>定义接口</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义一个接口，只包含一个方法</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">ConfigSaver</span> &#123;</span><br><span class="line">        <span class="type">boolean</span> <span class="title function_">saveAndGetMaganet</span><span class="params">(String ip_addr, <span class="type">int</span> port)</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>把函数当作参数传递进去，实现方法</p>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 方法的具体实现</span></span><br><span class="line"><span class="keyword">private</span> <span class="type">boolean</span> <span class="title function_">connectGetMaganet</span><span class="params">(String ip, <span class="type">int</span> port)</span>&#123;</span><br><span class="line">        <span class="type">SharedPreferences</span> <span class="variable">prefs</span> <span class="operator">=</span> ConnectFragment.get_prefs(<span class="built_in">this</span>);</span><br><span class="line">        SharedPreferences.<span class="type">Editor</span> <span class="variable">editor</span> <span class="operator">=</span> prefs.edit();</span><br><span class="line"></span><br><span class="line">        editor.putString(<span class="string">&quot;ip_address&quot;</span>, ip);</span><br><span class="line">        editor.putInt(<span class="string">&quot;port&quot;</span>, port);</span><br><span class="line"></span><br><span class="line">        editor.apply();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        contr.navigate(R.id.connectFragment);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> prefs.getBoolean(<span class="string">&quot;magnetometer&quot;</span>, <span class="literal">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">discoveryHost</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(!AutoDiscoverer.discoveryStillNecessary) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">AutoDiscoverer</span> <span class="variable">disc</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AutoDiscoverer</span>(<span class="built_in">this</span>, <span class="built_in">this</span>::connectGetMaganet); <span class="comment">// 此处的第二个参数便是上面实现的函数</span></span><br><span class="line">            <span class="type">Thread</span> <span class="variable">thread</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Thread</span>(disc::try_discover);</span><br><span class="line">            thread.start();</span><br><span class="line">        &#125; <span class="keyword">catch</span>(OutOfMemoryError ignored)&#123;&#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>而当我使用Kotlin来写这段代码的时候，IDE报了error</p>
+<p>类与接口定义部分：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AutoDiscoverer</span></span>(<span class="keyword">var</span> act: Activity, <span class="keyword">var</span> onConnect: ConfigSaver) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 此处创建一个功能接口，只包含一个确定是否启用手机的磁力计的方法</span></span><br><span class="line">    <span class="class"><span class="keyword">interface</span> <span class="title">ConfigSaver</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">saveAndGetMaganet</span><span class="params">(ip_addr: <span class="type">String</span>?, port: <span class="type">Int</span>)</span></span>: <span class="built_in">Boolean</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">doConnect</span><span class="params">(addr: <span class="type">InetAddress</span>?, port: <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> mainIntent = Intent(act, TrackingService::<span class="keyword">class</span>.java)</span><br><span class="line">        mainIntent.putExtra(<span class="string">&quot;ipAddrTxt&quot;</span>, addr!!.hostAddress)</span><br><span class="line">        mainIntent.putExtra(<span class="string">&quot;port_no&quot;</span>, port)</span><br><span class="line">        mainIntent.putExtra(<span class="string">&quot;magnetometer&quot;</span>, onConnect.saveAndGetMaganet(addr.hostAddress, port)) <span class="comment">// 此处调用接口</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// start service</span></span><br><span class="line">        <span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.O) &#123;</span><br><span class="line">            act.startForegroundService(mainIntent)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            act.startService(mainIntent)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>把函数当作参数传递进去，实现方法：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">connectGetMaganet</span><span class="params">(ip_addr: <span class="type">String</span>?, port: <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">val</span> prefs = ConnectFragment.get_prefs(<span class="keyword">this</span><span class="symbol">@MainActivity</span>)</span><br><span class="line">    <span class="keyword">val</span> editor = prefs.edit()</span><br><span class="line">    editor.putString(<span class="string">&quot;ip_address&quot;</span>, ip_addr)</span><br><span class="line">    editor.putInt(<span class="string">&quot;port&quot;</span>, port)</span><br><span class="line">    editor.apply()</span><br><span class="line">    contr!!.navigate(R.id.connectFragment)</span><br><span class="line">    <span class="keyword">return</span> prefs.getBoolean(<span class="string">&quot;magnetometer&quot;</span>, <span class="literal">true</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">discoveryHost</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (!AutoDiscoverer.discoveryStillNecessary) <span class="keyword">return</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">val</span> disc = AutoDiscoverer(<span class="keyword">this</span>, <span class="keyword">this</span>::connectGetMaganet) <span class="comment">// IDE报错，参数类型不符合</span></span><br><span class="line">            <span class="keyword">val</span> thread = Thread &#123; disc.try_discover() &#125;</span><br><span class="line">            thread.start()</span><br><span class="line">        &#125; <span class="keyword">catch</span> (ignored: OutOfMemoryError) &#123;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>一时间有点懵，Kotlin难道不支持把函数作为参数传递吗？Kotlin作为一门现代语言，这显然是不可能的，于是在查阅了资料以后，这才明白Kotlin在参数传递函数这方面与Java的不同。</p>
+<h2 id="SAM单一抽象接口"><a href="#SAM单一抽象接口" class="headerlink" title="SAM单一抽象接口"></a>SAM单一抽象接口</h2><p>也就是Kotlin的函数式接口，SAM描述的是单一的抽象方法接口，也被称为功能接口。功能接口只能包含一个一个方法。与Java不同的是，我们需要给接口修饰一个<code>fun</code>，如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AutoDiscoverer</span></span>(<span class="keyword">var</span> act: Activity, <span class="keyword">var</span> onConnect: ConfigSaver) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 此处创建一个功能接口，只包含一个确定是否启用手机的磁力计的方法</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="keyword">interface</span> ConfigSaver &#123; // 使用<span class="keyword">fun</span>来修饰接口！</span></span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">saveAndGetMaganet</span><span class="params">(ip_addr: <span class="type">String</span>?, port: <span class="type">Int</span>)</span></span>: <span class="built_in">Boolean</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">doConnect</span><span class="params">(addr: <span class="type">InetAddress</span>?, port: <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> mainIntent = Intent(act, TrackingService::<span class="keyword">class</span>.java)</span><br><span class="line">        mainIntent.putExtra(<span class="string">&quot;ipAddrTxt&quot;</span>, addr!!.hostAddress)</span><br><span class="line">        mainIntent.putExtra(<span class="string">&quot;port_no&quot;</span>, port)</span><br><span class="line">        mainIntent.putExtra(<span class="string">&quot;magnetometer&quot;</span>, onConnect.saveAndGetMaganet(addr.hostAddress, port)) <span class="comment">// 此处调用接口</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// start service</span></span><br><span class="line">        <span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.O) &#123;</span><br><span class="line">            act.startForegroundService(mainIntent)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            act.startService(mainIntent)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后便是实现了，这是我的实现方法：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">discoveryHost</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (!AutoDiscoverer.discoveryStillNecessary) <span class="keyword">return</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 在这里实现功能</span></span><br><span class="line">            <span class="keyword">val</span> connectGetMaganet = <span class="keyword">object</span>: ConfigSaver&#123;</span><br><span class="line">                <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">saveAndGetMaganet</span><span class="params">(ip_addr: <span class="type">String</span>?, port: <span class="type">Int</span>)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">                    <span class="keyword">val</span> prefs = ConnectFragment.get_prefs(<span class="keyword">this</span><span class="symbol">@MainActivity</span>)</span><br><span class="line">                    <span class="keyword">val</span> editor = prefs.edit()</span><br><span class="line">                    editor.putString(<span class="string">&quot;ip_address&quot;</span>, ip_addr)</span><br><span class="line">                    editor.putInt(<span class="string">&quot;port&quot;</span>, port)</span><br><span class="line">                    editor.apply()</span><br><span class="line">                    contr!!.navigate(R.id.connectFragment)</span><br><span class="line">                    <span class="keyword">return</span> prefs.getBoolean(<span class="string">&quot;magnetometer&quot;</span>, <span class="literal">true</span>)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">val</span> disc = AutoDiscoverer(<span class="keyword">this</span>, connectGetMaganet) <span class="comment">// 作为参数传递</span></span><br><span class="line">            <span class="keyword">val</span> thread = Thread &#123; disc.try_discover() &#125;</span><br><span class="line">            thread.start()</span><br><span class="line">        &#125; <span class="keyword">catch</span> (ignored: OutOfMemoryError) &#123;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>问题解决！</p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>能够把自己所学的东西应用到现实里确实让人充满成就感，但是这个过程中，各种磕磕碰碰还是避免不了的，因为以前是用Java写Android的，所以总是会因为Kotlin与Java的不同踩不少坑，但是也正是因为这些，才能让我对Kotlin有更加深刻的了解。</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+        
+    <div id="gitalk-container" class="comment link"
+		data-enable="false"
+        data-ae="false"
+        data-ci=""
+        data-cs=""
+        data-r=""
+        data-o=""
+        data-a=""
+        data-d="false"
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+</html>
